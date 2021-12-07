@@ -8,7 +8,7 @@
 ```
 git clone https://github.com/mspark/aoc-discord
 cd aoc-discord
-mvn package
+mvn package spring-boot:repackage
 ```
 ## Running
 **Requirements**
@@ -32,4 +32,4 @@ aoc:
   
 ```
 
-Start it with `java -jar aoc-discord.jar`
+Start it with `java -jar target/aoc-1.0-spring-boot.jar` (maybe you have to change the version which is inside the jar file)
