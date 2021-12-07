@@ -43,7 +43,7 @@ public class VerificationTaskManager {
             throw new AlreadyVerifiedExcpetion();
         } else if (verifyTasks.isEmpty()) {
             verifyTasks.add(new VerificationTask(discordUserId, lbService));
-            kickAllUserFromLeaderboard(lbService.getAocLeaderboardId());
+            kickAllUserFromLeaderboard(lbService.getAocLeaderboardId()); // just for safety
             return Optional.of(regenerateInviteCode());
         } else {
             return Optional.empty();
@@ -60,6 +60,7 @@ public class VerificationTaskManager {
                     jdas.getNextJDA().openPrivateChannelById(verifiedDiscordId).complete()
                         .sendMessage("Verified!").submit();
                     verifyTasks.remove(vtask);
+                    kickAllUserFromLeaderboard(verifiedDiscordId);
                 }
             } catch (MaxRetriesReachedException e) {
                 System.out.println("Max timeout reached");
