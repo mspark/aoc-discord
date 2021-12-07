@@ -1,0 +1,59 @@
+package de.mspark.aoc.leaderboard;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import de.mspark.aoc.parsing.Entry;
+import de.mspark.aoc.verficiation.DiscordNameResolver;
+
+class LocalLeaderboard {
+        private List<Entry> sortedEntrys;
+        private DiscordNameResolver mapper;
+        
+        static final String[] ranks = {":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
+        static final String[] STAIRS = {":crown:", ":star2:", ":star:"};
+        private int rank = 0;
+        private int count = 0;
+        
+        LocalLeaderboard(List<Entry> entrys, DiscordNameResolver mapper) {
+            this.sortedEntrys = entrys.stream().sorted().toList();
+            this.mapper = mapper;
+        }
+        
+        Optional<String> getTopTenEntry(Entry leaderboardMember) {
+            rank++;
+            count++;
+            if (count >= 11) {
+                return Optional.empty();
+            } else {
+                String name = mapper.getVerifiedName(leaderboardMember.id()).orElse(leaderboardMember.name());
+                String rankStr = (rank <= 10 ? ranks[rank - 1]: "");
+                String extra = rank <= 3 ? STAIRS[rank - 1]: "";
+                String text = (extra != "" ? extra : rankStr) + " " + name + " **[ " + leaderboardMember.localScore() + " ]**";              
+                if (count == 3) { // Additional line to seperate the top three
+                    text += "\n";
+                }
+                return Optional.of(text);
+            }
+        }
+        
+        private String getLeaderboardEntry(Entry leaderboardMember) {
+            String name = mapper.getVerifiedName(leaderboardMember.id()).orElse(leaderboardMember.name());
+            return name + " **[ " + leaderboardMember.localScore() + " ]**"; 
+        }
+        
+        String generateTopTenEntrysAsString() {
+            return sortedEntrys.stream()
+                .map(this::getTopTenEntry)
+                .flatMap(Optional::stream)
+                .reduce((a,b) -> a + "\n" + b)
+                .orElse("No user in private leaderboard");
+        }
+        
+        String generateAllEntrysAsString() {
+            return sortedEntrys.stream()
+                    .map(this::getLeaderboardEntry)
+                    .collect(Collectors.joining("\n"));
+        }
+    }
