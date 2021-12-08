@@ -1,6 +1,9 @@
 package de.mspark.aoc.leaderboard;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.map.HashedMap;
 
 import de.mspark.aoc.AocConfig;
 import de.mspark.jdaw.Command;
@@ -20,12 +23,16 @@ public class LeaderboardCommand extends Command {
 
     private final PrivateLeaderboardService lbService;
     private final String roomCode;
-    private final PeriodicMessageDeleter deleter;
     
-    public LeaderboardCommand(JDAWConfig conf, JDAManager jdas, PrivateLeaderboardService lbService, AocConfig config, PeriodicMessageDeleter deleter) {
+    /**
+     * Key is the channel id where the leaderboard is sent
+     * Value  is the messages which has been sent by the bot.
+     */
+    private final Map<String, String> sendLeaderboardMessages = new HashedMap<>(); 
+    
+    public LeaderboardCommand(JDAWConfig conf, JDAManager jdas, PrivateLeaderboardService lbService, AocConfig config) {
         super(conf, jdas, false);
         this.lbService = lbService;
-        this.deleter = deleter;
         this.roomCode = "`" + config.inviteCode() + "`";
     }
 
@@ -38,8 +45,8 @@ public class LeaderboardCommand extends Command {
                 msg.getChannel().sendMessage("Invalid arguments").submit();
             }
         } else {
-            var textMessage = msg.getChannel().sendMessage(lbService.retrieveLeaderboardEmbed()).complete();
-            deleter.addMessages(textMessage.getId());
+            var textMessageFuture = msg.getChannel().sendMessage(lbService.retrieveLeaderboardEmbed()).submit();
+            textMessageFuture.thenAccept(textMsg -> cacheNewMessageDeleteOld(textMsg));
         }
 //        msg.getAuthor().openPrivateChannel().complete().sendMessage(lbService.retrieveLeaderboardEmbed()).submit();
     }
@@ -53,4 +60,11 @@ public class LeaderboardCommand extends Command {
                 .build();
     }
     
+   private void cacheNewMessageDeleteOld(Message msg) {
+       String oldLeaderboardMessageId = sendLeaderboardMessages.get(msg.getChannel().getId());
+       if (oldLeaderboardMessageId != null) {
+           msg.getChannel().deleteMessageById(oldLeaderboardMessageId).submit();
+       }
+       sendLeaderboardMessages.put(msg.getChannel().getId(), msg.getId());
+   }
 }
