@@ -18,7 +18,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
     aliases = {"lb", "board"},
     description = "Shows the leaderboard of a private room", 
     helpPage = true,
-    executableWihtoutArgs = true)
+    executableWihtoutArgs = true,
+    privateChatAllowed = true)
 public class LeaderboardCommand extends Command {
 
     private final PrivateLeaderboardService lbService;

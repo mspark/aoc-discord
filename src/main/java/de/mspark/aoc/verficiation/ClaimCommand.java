@@ -11,7 +11,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-@CommandProperties(trigger = "claim", description = "Claims your AOC account and connects it with discord", executableWihtoutArgs = true)
+@CommandProperties(
+    trigger = "claim",
+    description = "Claims your AOC account and connects it with discord", 
+    executableWihtoutArgs = true, 
+    privateChatAllowed = true)
 public class ClaimCommand extends Command {
     private VerificationTaskManager verifier;
     
@@ -44,8 +48,9 @@ public class ClaimCommand extends Command {
     
     @Override
     protected MessageEmbed fullHelpPage() {
-        return new EmbedBuilder().setDescription("You can claim an AOC Account by proving that you're the owner of an Account. "
-                + "Afterwards it is connected with your Servermembership here and your Discord Name appears in the leaderboard instead of your AOC Name. ")
+        return new EmbedBuilder()
+                .setDescription("You can claim an AOC Account by proving that you're the owner of an Account. "
+                        + "Afterwards it is connected with your Servermembership here and your Discord Name appears in the leaderboard instead of your AOC Name. ")
                 .build();
     }
 }
