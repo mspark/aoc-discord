@@ -36,12 +36,12 @@ public abstract class LeaderboardService {
     public abstract String getAocLeaderboardId();
 
     protected Optional<List<Entry>> callAndParseLeaderboard(String leaderboardId) {
-        return makeAocHttpCallWithBody("https://adventofcode.com/2021/leaderboard/private/view/" + leaderboardId + ".json")
+        return makeAocHttpCall("https://adventofcode.com/2021/leaderboard/private/view/" + leaderboardId + ".json")
                 .map(LeaderboardService::parseBodyJson);
     }
 
     protected void removeUserFromLeaderboard(String aocUserId, String leaderboardId) {
-        makeAocHttpCallWithBody("https://adventofcode.com/2021/leaderboard/private/part/%s/%s".formatted(leaderboardId, aocUserId));
+        makeAocHttpCall("https://adventofcode.com/2021/leaderboard/private/part/%s/%s".formatted(leaderboardId, aocUserId));
     }
     
     protected static List<Entry> parseBodyJson(String body) {
@@ -55,7 +55,13 @@ public abstract class LeaderboardService {
                 .toList();
     }
     
-    public Optional<String> makeAocHttpCallWithBody(String url) {
+    /**
+     * Send a HTTP call to a specified URL with an AOC session.
+     * 
+     * @param url Desired AOC URL
+     * @return HTTP Body from response. Is empty when a failure occure during the http call.
+     */
+    public Optional<String> makeAocHttpCall(String url) {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Cookie", "session=" + config.session())

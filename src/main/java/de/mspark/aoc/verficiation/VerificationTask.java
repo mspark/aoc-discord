@@ -23,8 +23,8 @@ class VerificationTask {
         public boolean verifyUser() throws MaxRetriesReachedException {
             if (pastRetries < MAX_RETRIES) {
                 if (!isVerified) {
-                    var entry = lbService.retrieveLeaderboard();
-                    entry.flatMap(this::searchForUserId).ifPresent(e -> this.lbEntry = e);
+                    var optionalLeaderboardEntrys = lbService.retrieveLeaderboard();
+                    optionalLeaderboardEntrys.flatMap(this::findAnyUserExceptOwn).ifPresent(e -> this.lbEntry = e);
                     pastRetries++;
                     return lbEntry != null;
                 } else {
@@ -34,13 +34,13 @@ class VerificationTask {
             throw new MaxRetriesReachedException();
         }
         
-        public Optional<Entry> searchForUserId(List<Entry> lbEntrys) {
+        private Optional<Entry> findAnyUserExceptOwn(List<Entry> lbEntrys) {
             String ownUser = lbService.getAocLeaderboardId(); // id is always the user itself (except for global leaderboard)
             var opt = lbEntrys.stream().filter(e -> !e.id().equals(ownUser)).findFirst();
             return opt;
         }
         
-        public Optional<String> getVerifiedAocUserId() {
+        public Optional<String> getVerifiedAocMemberId() {
             if (lbEntry != null) {
                 return Optional.of(lbEntry.id());
             }

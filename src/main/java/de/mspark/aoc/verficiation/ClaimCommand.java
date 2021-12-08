@@ -34,10 +34,10 @@ public class ClaimCommand extends Command {
     }
 
     private void verify(Message msg) {
-        var optInvite = this.verifier.registerVerifyAction(msg.getAuthor().getId());
-        if (optInvite.isPresent()) {
+        var personalInviteCode = this.verifier.registerVerifyAction(msg.getAuthor().getId());
+        if (personalInviteCode.isPresent()) {
             msg.getAuthor().openPrivateChannel().complete()
-                .sendMessage("Please join this leaderbord `" + optInvite.get() + "`. You have 5 minutes to do that. When you're done, I'll notify you again")
+                .sendMessage("Please join this leaderbord `" + personalInviteCode.get() + "`. You have 5 minutes to do that. When you're done, I'll notify you again")
                 .submit();
             msg.reply("Look at your DMs!").submit();
         } else {

@@ -38,10 +38,10 @@ public class LeaderboardWriter {
         int day = MiscUtils.getAocDay();
         String dailyText = ":sparkles: Die Aufgaben für den **" + day + ". Tag** von Advent-Of-Code können nun gelöst werden! :sparkles:";
         var txtChannel = jda.getNextJDA().getTextChannelById(config.dailyChannelId());
-        txtChannel.sendMessage(dailyText).submit();
         if (day > 1) {
             txtChannel.sendMessage(lbService.retrieveLeaderboardEmbed()).submit();
         }
+        txtChannel.sendMessage(dailyText).submit();
     }
     
     @Scheduled(cron = "*/60 */2 * * * *")
