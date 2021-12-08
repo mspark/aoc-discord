@@ -1,19 +1,16 @@
 package de.mspark.aoc.parsing;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class Entry implements Comparable<Entry> {
     
     // Currently this record is needed for parsing. When a type adapter is available for the whole entry, its attributes can be moved to the entry class
     public static record Completions(int day, int stagesComplete, String completionTime) {
-        public String completionTime() {
-            double db = Double.parseDouble(completionTime) * 1000;
-            var ts = new Timestamp((long) db);
-            var dateFormat = new SimpleDateFormat("kk:mm:ss");
-            return dateFormat.format(ts);
-        }
     }
 
     private String id;
@@ -38,6 +35,15 @@ public class Entry implements Comparable<Entry> {
         return arg0.local_score - this.local_score;
     }
     
+    public int compareWithDailyScore(Entry arg0, int currentAocDay) {
+        int diff = arg0.stagesCompleteForDay(currentAocDay).orElse(0) - this.stagesCompleteForDay(currentAocDay).orElse(0);
+        if (diff == 0) {
+            var now = Instant.now().atOffset(ZoneOffset.UTC).toLocalDateTime();
+            diff = this.latestStageCompletionTime().orElse(now).compareTo(arg0.latestStageCompletionTime().orElse(now));
+        }
+        return diff;
+    }
+    
     public String id() {
         return id;
     }
@@ -46,7 +52,7 @@ public class Entry implements Comparable<Entry> {
         int complete = completion_day_level.stagesComplete;
         if (complete != 0) {
             String word = complete == 1 ? "erste" : "zweite";
-            return "**%s** hat die %s Aufgabe von Tag %s um **%s** Uhr gelöst".formatted(name, word, completion_day_level.day, completion_day_level.completionTime());
+            return "**%s** hat die %s Aufgabe von Tag %s um **%s** Uhr gelöst".formatted(name, word, completion_day_level.day, completionTimeFormatted());
         } else {
             return "%s hat noch keine Aufgabe an %s gelöst".formatted(name, completion_day_level.day);
         }
@@ -74,5 +80,20 @@ public class Entry implements Comparable<Entry> {
             stagesComplete =  Optional.of(completion_day_level.stagesComplete);
         } 
         return stagesComplete;
+    }
+    
+    public Optional<LocalDateTime> latestStageCompletionTime() {
+        String tsString = completion_day_level.completionTime;
+        if (tsString != null) {
+            double ts = Double.parseDouble(completion_day_level.completionTime) * 1000;
+            ZoneId zone = ZoneId.of("Europe/Berlin");
+            return Optional.of(LocalDateTime.ofInstant(Instant.ofEpochMilli((long) ts), zone));
+        }
+        return Optional.empty();
+    }
+    
+    public String completionTimeFormatted() {
+        var dateFormat = DateTimeFormatter.ofPattern("kk:mm:ss");
+        return latestStageCompletionTime().map(d -> dateFormat.format(d)).orElse("Not solved");
     }
 }

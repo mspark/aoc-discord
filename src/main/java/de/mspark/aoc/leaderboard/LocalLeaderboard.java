@@ -23,7 +23,7 @@ class LocalLeaderboard {
         }
         
         Optional<String> getTopTenEntry(Entry leaderboardMember) {
-            rank++;
+            int rank = getAndIncreaseRank();
             count++;
             if (count >= 11) {
                 return Optional.empty();
@@ -49,6 +49,7 @@ class LocalLeaderboard {
         String generateAllEntrysAsString() {
             return sortedEntrys.stream()
                     .map(this::getLeaderboardEntry)
+                    .map(s -> getAndIncreaseRank() + ". " + s)
                     .collect(Collectors.joining("\n"));
         }
         
@@ -56,9 +57,22 @@ class LocalLeaderboard {
             int day = MiscUtils.getAocDay();
             return sortedEntrys.stream()
                 .filter(e -> e.stagesCompleteForDay(day).orElse(0) > 0)
-                .map(e -> getName(e) + " completed **" + e.stagesCompleteForDay(day).get() + "**\n")
-                .reduce((a,b) -> a + "\n" + b)
+                .sorted((a, b) -> a.compareWithDailyScore(b, day))                
+                .map(e -> dailyCompletionEntry(e))
+                .reduce((a,b) -> a + "\n" + b)  
                 .orElse("No user in private leaderboard");
+        }
+
+        private int getAndIncreaseRank() {
+            rank++;
+            return rank;
+        }
+
+        private String dailyCompletionEntry(Entry leaderboardMember) {
+            int day = MiscUtils.getAocDay();
+            return getAndIncreaseRank() + ". " 
+                    + getName(leaderboardMember) + " completed **" + leaderboardMember.stagesCompleteForDay(day).get() + "**"
+                    + " *(latest " + leaderboardMember.completionTimeFormatted() + ")*";
         }
         
         private String getLeaderboardEntry(Entry leaderboardMember) {
