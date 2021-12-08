@@ -11,6 +11,7 @@ import de.mspark.jdaw.CommandProperties;
 import de.mspark.jdaw.JDAManager;
 import de.mspark.jdaw.config.JDAWConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -40,32 +41,41 @@ public class LeaderboardCommand extends Command {
     @Override
     public void doActionOnCmd(Message msg, List<String> cmdArguments) {
         if (cmdArguments.size() > 0) {
-            if (cmdArguments.get(0).equals("full")) {
-                msg.getChannel().sendMessage(lbService.retrieveFullLeaderboardEmbed()).submit();
-            } else {
-                msg.getChannel().sendMessage("Invalid arguments").submit();
+            switch (cmdArguments.get(0)) {
+                case "full" -> msg.getChannel().sendMessage(lbService.retrieveFullLeaderboardEmbed()).submit();
+                case "daily" -> actionSendDailyCompletions(msg);
+                default -> msg.getChannel().sendMessage("Invalid arguments").submit();
             }
         } else {
-            var textMessageFuture = msg.getChannel().sendMessage(lbService.retrieveLeaderboardEmbed()).submit();
-            textMessageFuture.thenAccept(textMsg -> cacheNewMessageDeleteOld(textMsg));
+             msg.getChannel()
+                 .sendMessage(lbService.retrieveLeaderboardEmbed()).submit()
+                 .thenAccept(m -> cacheNewMessageDeleteOld(m));
         }
-//        msg.getAuthor().openPrivateChannel().complete().sendMessage(lbService.retrieveLeaderboardEmbed()).submit();
+    }
+
+    private void actionSendDailyCompletions(Message msg) {
+        msg.getChannel()
+            .sendMessage(lbService.retrieveDailyLeaderboardEmbed()).submit()
+            .thenAccept(m -> cacheNewMessageDeleteOld(m));
     }
 
     @Override
     protected MessageEmbed fullHelpPage() {
         return new EmbedBuilder()
                 .setDescription(getShortDescription() + "\n Room code: " + roomCode + "\n The leaderboard is sent daily. "
-                + "If you manually ask for it, the sent message will be automatically removed after a specific time to keep the channel history clean.")
+                        + "If you manually ask for it, the sent message will be automatically removed after a specific time to keep the channel history clean.")
                 .addField("full", "With this parameter you see the whole leaderboard and not just the ten best", false)
+                .addField("daily", "Shows the number of completed stages of all member which at least completed on stage on the current day", false)
                 .build();
     }
     
    private void cacheNewMessageDeleteOld(Message msg) {
-       String oldLeaderboardMessageId = sendLeaderboardMessages.get(msg.getChannel().getId());
-       if (oldLeaderboardMessageId != null) {
-           msg.getChannel().deleteMessageById(oldLeaderboardMessageId).submit();
+       if (!msg.isFromType(ChannelType.PRIVATE)) {
+           String oldLeaderboardMessageId = sendLeaderboardMessages.get(msg.getChannel().getId());
+           if (oldLeaderboardMessageId != null) {
+               msg.getChannel().deleteMessageById(oldLeaderboardMessageId).submit();
+           }
+           sendLeaderboardMessages.put(msg.getChannel().getId(), msg.getId());
        }
-       sendLeaderboardMessages.put(msg.getChannel().getId(), msg.getId());
    }
 }

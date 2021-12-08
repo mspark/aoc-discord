@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.mspark.aoc.MiscUtils;
 import de.mspark.aoc.parsing.Entry;
 import de.mspark.aoc.verficiation.DiscordNameResolver;
 
@@ -27,20 +28,14 @@ class LocalLeaderboard {
             if (count >= 11) {
                 return Optional.empty();
             } else {
-                String name = mapper.getVerifiedName(leaderboardMember.id()).orElse(leaderboardMember.name());
                 String rankStr = (rank <= 10 ? ranks[rank - 1]: "");
                 String extra = rank <= 3 ? STAIRS[rank - 1]: "";
-                String text = (extra != "" ? extra : rankStr) + " " + name + " **[ " + leaderboardMember.localScore() + " ]**";              
+                String text = (extra != "" ? extra : rankStr) + " " + getLeaderboardEntry(leaderboardMember);           
                 if (count == 3) { // Additional line to seperate the top three
                     text += "\n";
                 }
                 return Optional.of(text);
             }
-        }
-        
-        private String getLeaderboardEntry(Entry leaderboardMember) {
-            String name = mapper.getVerifiedName(leaderboardMember.id()).orElse(leaderboardMember.name());
-            return name + " **[ " + leaderboardMember.localScore() + " ]**"; 
         }
         
         String generateTopTenEntrysAsString() {
@@ -55,5 +50,23 @@ class LocalLeaderboard {
             return sortedEntrys.stream()
                     .map(this::getLeaderboardEntry)
                     .collect(Collectors.joining("\n"));
+        }
+        
+        String generateDailyCompletionAsString() {
+            int day = MiscUtils.getAocDay();
+            return sortedEntrys.stream()
+                .filter(e -> e.stagesCompleteForDay(day).orElse(0) > 0)
+                .map(e -> getName(e) + " completed **" + e.stagesCompleteForDay(day).get() + "**\n")
+                .reduce((a,b) -> a + "\n" + b)
+                .orElse("No user in private leaderboard");
+        }
+        
+        private String getLeaderboardEntry(Entry leaderboardMember) {
+            String name = mapper.getVerifiedName(leaderboardMember.id()).orElse(leaderboardMember.name());
+            return name + " **[ " + leaderboardMember.localScore() + " ]**"; 
+        }
+        
+        private String getName(Entry entry) {
+            return mapper.getVerifiedName(entry.id()).orElse(entry.name());
         }
     }
