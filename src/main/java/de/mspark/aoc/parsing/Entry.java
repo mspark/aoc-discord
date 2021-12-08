@@ -2,6 +2,7 @@ package de.mspark.aoc.parsing;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 public class Entry implements Comparable<Entry> {
     
@@ -51,11 +52,27 @@ public class Entry implements Comparable<Entry> {
         }
     }
     
+    /**
+     * Updates the cache information about the completed stages of the user. Only the latest update is saved. The new entry overrides the old information.
+     * 
+     * @param e
+     */
     public void updateCompletion(Entry e) {
         this.completion_day_level = e.completion_day_level;
     }
     
-    public int stagesComplete() {
-        return completion_day_level.stagesComplete;
+    /**
+     * Gives the number of completed stages for one day. Currently only one (typically the latest one) is saved in the cache. 
+     * When older dates are requested, the return value contains nothing.
+     * 
+     * @param day
+     * @return
+     */
+    public Optional<Integer> stagesCompleteForDay(int day) {
+        Optional<Integer> stagesComplete = Optional.empty();
+        if (completion_day_level.day == day) {
+            stagesComplete =  Optional.of(completion_day_level.stagesComplete);
+        } 
+        return stagesComplete;
     }
 }

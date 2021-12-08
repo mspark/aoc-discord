@@ -47,12 +47,16 @@ public class LeaderboardWriter {
     @Scheduled(cron = "*/60 */2 * * * *")
     public void checkAndWriteForTaskCompletion() {
         var currentLb = lbService.retrieveLeaderboard();
+        int day = LocalDate.now().getDayOfMonth();
         currentLb.get().forEach(current -> {
             var old = savedEntrys.get(current.id());
-            if (old.stagesComplete() < current.stagesComplete()) {
+            int oldStagesCompleted = old.stagesCompleteForDay(day).orElse(0);
+            int actualStagesCompleted = current.stagesCompleteForDay(day).orElse(0);
+            if (oldStagesCompleted < actualStagesCompleted) {
                 jda.getNextJDA().getTextChannelById(config.dailyChannelId()).sendMessage(current.getCompletionMessage()).submit();
                 old.updateCompletion(current);
             }
         });
     }
+    
 }
