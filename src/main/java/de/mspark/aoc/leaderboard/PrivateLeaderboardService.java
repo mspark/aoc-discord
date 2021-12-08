@@ -2,13 +2,17 @@ package de.mspark.aoc.leaderboard;
 
 import java.awt.Color;
 import java.time.Instant;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import de.mspark.aoc.AocConfig;
 import de.mspark.aoc.MiscUtils;
+import de.mspark.aoc.parsing.Entry;
 import de.mspark.aoc.verficiation.DiscordNameResolver;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -25,36 +29,41 @@ public class PrivateLeaderboardService extends LeaderboardService {
     }
 
     public MessageEmbed retrieveLeaderboardEmbed() {
-        return createEmbedOnLeaderboard(lb -> new EmbedBuilder()
+        return generateEmbedWithSortedLeadeboardEntrys(
+            sortedList -> new EmbedBuilder()
                 .setTitle("Advent Of Code: Top10 Leaderboard")
-                .setDescription(lb.generateTopTenEntrysAsString())
+                .setDescription(this.generateTopTenEntrysAsString(sortedList))
                 .appendDescription("\n\n Du willst mitmachen? Klick [hier](https://adventofcode.com/2021/leaderboard/private) und nutze: `%s`".formatted(config.inviteCode()))
                 .setTimestamp(Instant.now())
                 .setColor(new Color(231, 42, 100)) // #e72a64
-                .build());
+                .build()
+            );
     }
     
     public MessageEmbed retrieveFullLeaderboardEmbed() {
-        return createEmbedOnLeaderboard(
-            lb -> new EmbedBuilder().setTitle("Advent of Code private leaderboard")
-                .setDescription(lb.generateAllEntrysAsString())
+        return generateEmbedWithSortedLeadeboardEntrys(
+            sortedList -> new EmbedBuilder().setTitle("Advent of Code private leaderboard")
+                .setDescription(this.generateAllEntrysAsString(sortedList))
                 .setTimestamp((Instant.now()))
-                .build());
+                .build()
+            );
     }
     
     public MessageEmbed retrieveDailyLeaderboardEmbed() {
         int day = MiscUtils.getAocDay();
-        return createEmbedOnLeaderboard(
-            lb -> new EmbedBuilder().setTitle("Completions for day " + day)
-                .setDescription(lb.generateDailyCompletionAsString())
-                .build());
+        return generateEmbedWithSortedLeadeboardEntrys(
+            sortedList -> new EmbedBuilder().setTitle("Completions for day " + day)
+                .setDescription(this.generateDailyCompletionAsString(sortedList))
+                .build()
+            );
     }
     
-    private MessageEmbed createEmbedOnLeaderboard(Function<LocalLeaderboard, MessageEmbed> runnable) {
+    private MessageEmbed generateEmbedWithSortedLeadeboardEntrys(Function<List<Entry>, MessageEmbed> runnable) {
         var entrys =  callAndParseLeaderboard(config.privateLeaderboardId());
         try {
-            var lb = new LocalLeaderboard(entrys.orElseThrow(), mapper);
-            return runnable.apply(lb);
+            return runnable.apply(
+                    entrys.orElseThrow().stream().sorted().toList()
+                );
         } catch (NoSuchElementException e) {
             return new EmbedBuilder().setDescription("Currently the leaderboard is unavailable. Contact an administrator").build();
         }
@@ -63,5 +72,32 @@ public class PrivateLeaderboardService extends LeaderboardService {
     @Override
     public String getAocLeaderboardId() {
         return config.privateLeaderboardId();
+    }
+    
+    private String generateTopTenEntrysAsString(List<Entry> sortedEntrys) {
+        var creator = new LeaderboardEntryGenerator(mapper);
+        return sortedEntrys.stream()
+            .map(creator::getTopTenEntry)
+            .flatMap(Optional::stream)
+            .reduce((a,b) -> a + "\n" + b)
+            .orElse("No user in private leaderboard");
+    }
+    
+    private String generateAllEntrysAsString(List<Entry> sortedEntrys) {
+        var creator = new LeaderboardEntryGenerator(mapper);
+        return sortedEntrys.stream()
+                .map(creator::getRankedLeaderboardEntry)
+                .collect(Collectors.joining("\n"));
+    }
+    
+    private String generateDailyCompletionAsString(List<Entry> sortedEntrys) {
+        int day = MiscUtils.getAocDay();
+        var creator = new LeaderboardEntryGenerator(mapper);
+        return sortedEntrys.stream()
+            .filter(e -> e.stagesCompleteForDay(day).orElse(0) > 0)
+            .sorted((a, b) -> a.compareWithDailyScore(b, day))                
+            .map(creator::dailyCompletionEntry)
+            .reduce((a,b) -> a + "\n" + b)  
+            .orElse("No user in private leaderboard");
     }
 }

@@ -43,7 +43,7 @@ public class LeaderboardCommand extends Command {
         if (cmdArguments.size() > 0) {
             switch (cmdArguments.get(0)) {
                 case "full" -> msg.getChannel().sendMessage(lbService.retrieveFullLeaderboardEmbed()).submit();
-                case "daily" -> actionSendDailyCompletions(msg);
+                case "day" -> actionSendDailyCompletions(msg);
                 default -> msg.getChannel().sendMessage("Invalid arguments").submit();
             }
         } else {
