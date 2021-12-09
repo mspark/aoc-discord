@@ -36,9 +36,12 @@ public class ClaimCommand extends Command {
     private void verify(Message msg) {
         var personalInviteCode = this.verifier.registerVerifyAction(msg.getAuthor().getId());
         if (personalInviteCode.isPresent()) {
-            msg.getAuthor().openPrivateChannel().complete()
-                .sendMessage("Please join this leaderbord `" + personalInviteCode.get() + "`. You have 5 minutes to do that. When you're done, I'll notify you again")
-                .submit();
+            msg.getAuthor().openPrivateChannel().submit()
+                .thenAccept(pchat -> pchat.sendMessage(
+                    "Please join this leaderbord `%s`. You have 5 minutes to do that. When you're done, I'll notify you again"
+                            .formatted(personalInviteCode.get()))
+                    .submit()
+                );
             msg.reply("Look at your DMs!").submit();
         } else {
             msg.reply("There is an ongoing verfification process with a different user. Due to limitation of remote API, only one person can do a verification at once. Retry it later")
