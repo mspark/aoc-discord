@@ -1,7 +1,7 @@
 
 ## Installation
 **Requirements**
-- maven
+- maven (with auth token in maven settings, see [github documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token) for this)
 - java 17
 - git
 
