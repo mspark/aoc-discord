@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import de.mspark.aoc.AocConfig;
-import de.mspark.aoc.MiscUtils;
+import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
 import de.mspark.aoc.verficiation.DiscordNameResolver;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -50,7 +50,7 @@ public class PrivateLeaderboardService extends LeaderboardService {
     }
     
     public MessageEmbed retrieveDailyLeaderboardEmbed() {
-        int day = MiscUtils.getAocDay();
+        int day = AocDate.getAocDay();
         return generateEmbedWithSortedLeadeboardEntrys(
             sortedList -> new EmbedBuilder().setTitle("Completions for day " + day)
                 .setDescription(this.generateDailyCompletionAsString(sortedList))
@@ -91,7 +91,7 @@ public class PrivateLeaderboardService extends LeaderboardService {
     }
     
     private String generateDailyCompletionAsString(List<Entry> sortedEntrys) {
-        int day = MiscUtils.getAocDay();
+        int day = AocDate.getAocDay();
         var creator = new LeaderboardEntryGenerator(mapper);
         return sortedEntrys.stream()
             .filter(e -> e.stagesCompleteForDay(day).orElse(0) > 0)

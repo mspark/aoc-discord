@@ -2,10 +2,11 @@ package de.mspark.aoc.parsing;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+
+import de.mspark.aoc.AocDate;
 
 public class Entry implements Comparable<Entry> {
     
@@ -38,8 +39,10 @@ public class Entry implements Comparable<Entry> {
     public int compareWithDailyScore(Entry arg0, int currentAocDay) {
         int diff = arg0.stagesCompleteForDay(currentAocDay).orElse(0) - this.stagesCompleteForDay(currentAocDay).orElse(0);
         if (diff == 0) {
-            var now = Instant.now().atOffset(ZoneOffset.UTC).toLocalDateTime();
-            diff = this.latestStageCompletionTime().orElse(now).compareTo(arg0.latestStageCompletionTime().orElse(now));
+        	// when nothing was solved so far, use the latest possible time (now) for ordering
+            var fallbackTime = Instant.now().atOffset(ZoneOffset.UTC).toLocalDateTime();
+            diff = this.latestStageCompletionTime().orElse(fallbackTime)
+            		.compareTo(arg0.latestStageCompletionTime().orElse(fallbackTime));
         }
         return diff;
     }
@@ -85,15 +88,16 @@ public class Entry implements Comparable<Entry> {
     public Optional<LocalDateTime> latestStageCompletionTime() {
         String tsString = completion_day_level.completionTime;
         if (tsString != null) {
-            double ts = Double.parseDouble(completion_day_level.completionTime) * 1000;
-            ZoneId zone = ZoneId.of("Europe/Berlin");
-            return Optional.of(LocalDateTime.ofInstant(Instant.ofEpochMilli((long) ts), zone));
+            long ts = (long) Double.parseDouble(completion_day_level.completionTime) * 1000;
+            var zone = AocDate.getTimeZone();
+            var time = Instant.ofEpochMilli(ts).atZone(zone).toLocalDateTime();
+            return Optional.of(time);
         }
         return Optional.empty();
     }
     
     public String completionTimeFormatted() {
         var dateFormat = DateTimeFormatter.ofPattern("kk:mm:ss");
-        return latestStageCompletionTime().map(d -> dateFormat.format(d)).orElse("Not solved");
+        return latestStageCompletionTime().map(dateFormat::format).orElse("Not solved");
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import de.mspark.aoc.AocConfig;
-import de.mspark.aoc.MiscUtils;
+import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
 import de.mspark.jdaw.JDAManager;
 
@@ -35,7 +35,7 @@ public class LeaderboardWriter {
     
     @Scheduled(cron = "0 0 6 1-25 12 *")
     public void writeDailyMessage() {
-        int day = MiscUtils.getAocDay();
+        int day = AocDate.getAocDay();
         String dailyText = ":sparkles: Die Aufgaben für den **" + day + ". Tag** von Advent-Of-Code können nun gelöst werden! :sparkles:";
         var txtChannel = jda.getNextJDA().getTextChannelById(config.dailyChannelId());
         if (day > 1) {
@@ -47,7 +47,7 @@ public class LeaderboardWriter {
     @Scheduled(cron = "*/60 */2 * * * *")
     public void checkAndWriteForTaskCompletion() {
         var currentLb = lbService.retrieveLeaderboard();
-        int day = MiscUtils.getAocDay();
+        int day = AocDate.getAocDay();
         currentLb.get().forEach(current -> {
             var old = savedEntrys.get(current.id());
             int oldStagesCompleted = old.stagesCompleteForDay(day).orElse(0);

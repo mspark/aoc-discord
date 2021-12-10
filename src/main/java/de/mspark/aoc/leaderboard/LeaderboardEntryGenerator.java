@@ -2,7 +2,7 @@ package de.mspark.aoc.leaderboard;
 
 import java.util.Optional;
 
-import de.mspark.aoc.MiscUtils;
+import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
 import de.mspark.aoc.verficiation.DiscordNameResolver;
 
@@ -34,7 +34,7 @@ class LeaderboardEntryGenerator {
         }
     }
     String dailyCompletionEntry(Entry leaderboardMember) {
-        int day = MiscUtils.getAocDay();
+        int day = AocDate.getAocDay();
         return getAndIncreaseRank() + ". " 
                 + getName(leaderboardMember) + " completed **" + leaderboardMember.stagesCompleteForDay(day).get() + "**"
                 + " *(latest " + leaderboardMember.completionTimeFormatted() + ")*";
