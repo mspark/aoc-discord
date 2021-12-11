@@ -2,9 +2,7 @@ package de.mspark.aoc;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Calendar;
 
 public final class AocDate {
     
@@ -21,7 +19,6 @@ public final class AocDate {
     }
     
     public static ZoneId getTimeZone() {
-    	var localTimeZone = Calendar.getInstance().getTimeZone().getDisplayName();
-    	return ZoneId.of(localTimeZone);
+    	return ZoneId.systemDefault();
     }
 }

@@ -97,7 +97,7 @@ public class Entry implements Comparable<Entry> {
     }
     
     public String completionTimeFormatted() {
-        var dateFormat = DateTimeFormatter.ofPattern("kk:mm:ss");
+        var dateFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
         return latestStageCompletionTime().map(dateFormat::format).orElse("Not solved");
     }
 }
