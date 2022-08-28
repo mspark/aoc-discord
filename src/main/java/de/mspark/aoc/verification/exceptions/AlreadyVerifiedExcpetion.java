@@ -1,4 +1,4 @@
-package de.mspark.aoc.verficiation.exceptions;
+package de.mspark.aoc.verification.exceptions;
 
 public class AlreadyVerifiedExcpetion extends RuntimeException {
 

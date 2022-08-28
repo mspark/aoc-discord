@@ -1,4 +1,4 @@
-package de.mspark.aoc.verficiation;
+package de.mspark.aoc.verification;
 
 import org.springframework.stereotype.Service;
 

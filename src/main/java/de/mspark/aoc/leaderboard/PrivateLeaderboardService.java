@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import de.mspark.aoc.AocConfig;
 import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
-import de.mspark.aoc.verficiation.DiscordNameResolver;
+import de.mspark.aoc.verification.DiscordNameResolver;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
-import de.mspark.aoc.verficiation.DiscordNameResolver;
+import de.mspark.aoc.verification.DiscordNameResolver;
 
 class LeaderboardEntryGenerator {
     static final String[] ranks = {":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};

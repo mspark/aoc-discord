@@ -1,12 +1,13 @@
-package de.mspark.aoc.verficiation;
+package de.mspark.aoc.verification;
 
 import java.util.List;
 
-import de.mspark.aoc.verficiation.exceptions.AlreadyVerifiedExcpetion;
+import de.mspark.aoc.verification.exceptions.AlreadyVerifiedExcpetion;
 import de.mspark.jdaw.Command;
 import de.mspark.jdaw.CommandProperties;
 import de.mspark.jdaw.JDAManager;
 import de.mspark.jdaw.config.JDAWConfig;
+import de.mspark.jdaw.guilds.GuildConfigService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -19,8 +20,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class ClaimCommand extends Command {
     private VerificationTaskManager verifier;
     
-    public ClaimCommand(JDAWConfig conf, JDAManager jdas, VerificationTaskManager verifier) {
-        super(conf, jdas);
+    public ClaimCommand(JDAWConfig conf, GuildConfigService gc, JDAManager jdas, VerificationTaskManager verifier) {
+        super(conf, gc, jdas);
         this.verifier = verifier;
     }
     
@@ -29,7 +30,7 @@ public class ClaimCommand extends Command {
         try {
             verify(msg);            
         } catch (AlreadyVerifiedExcpetion e) {
-            msg.reply("Your already claimed your AOC account.").submit();
+            msg.reply("You already claimed your AOC account.").submit();
         }
     }
 
@@ -38,7 +39,7 @@ public class ClaimCommand extends Command {
         if (personalInviteCode.isPresent()) {
             msg.getAuthor().openPrivateChannel().submit()
                 .thenAccept(pchat -> pchat.sendMessage(
-                    "Please join this leaderbord `%s`. You have 5 minutes to do that. When you're done, I'll notify you again"
+                    "Please join this leaderboard `%s`. You have 5 minutes to do that. When you're done, I'll notify you again"
                             .formatted(personalInviteCode.get()))
                     .submit()
                 );

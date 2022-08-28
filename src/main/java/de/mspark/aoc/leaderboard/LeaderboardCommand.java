@@ -10,6 +10,7 @@ import de.mspark.jdaw.Command;
 import de.mspark.jdaw.CommandProperties;
 import de.mspark.jdaw.JDAManager;
 import de.mspark.jdaw.config.JDAWConfig;
+import de.mspark.jdaw.guilds.GuildConfigService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -32,8 +33,8 @@ public class LeaderboardCommand extends Command {
      */
     private final Map<String, String> sendLeaderboardMessages = new HashedMap<>(); 
     
-    public LeaderboardCommand(JDAWConfig conf, JDAManager jdas, PrivateLeaderboardService lbService, AocConfig config) {
-        super(conf, jdas, false);
+    public LeaderboardCommand(JDAWConfig conf, GuildConfigService gc, JDAManager jdas, PrivateLeaderboardService lbService, AocConfig config) {
+        super(conf, gc, jdas);
         this.lbService = lbService;
         this.roomCode = "`" + config.inviteCode() + "`";
     }

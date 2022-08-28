@@ -1,4 +1,4 @@
-package de.mspark.aoc.verficiation;
+package de.mspark.aoc.verification;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import de.mspark.aoc.AocConfig;
 import de.mspark.aoc.leaderboard.LeaderboardService;
-import de.mspark.aoc.verficiation.exceptions.AlreadyVerifiedExcpetion;
-import de.mspark.aoc.verficiation.exceptions.MaxRetriesReachedException;
+import de.mspark.aoc.verification.exceptions.AlreadyVerifiedExcpetion;
+import de.mspark.aoc.verification.exceptions.MaxRetriesReachedException;
 import de.mspark.jdaw.JDAManager;
 
 @Component
