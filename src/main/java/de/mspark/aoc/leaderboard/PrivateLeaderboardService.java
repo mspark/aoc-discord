@@ -13,19 +13,18 @@ import org.springframework.stereotype.Service;
 import de.mspark.aoc.AocConfig;
 import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
-import de.mspark.aoc.verification.DiscordNameResolver;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Service
 public class PrivateLeaderboardService extends LeaderboardService {    
-    private AocConfig config;
-    private DiscordNameResolver mapper;
+    private final AocConfig config;
+    private final LeaderboardEntryGenerator creator;
     
-    public PrivateLeaderboardService(AocConfig config, DiscordNameResolver mapper) {
+    public PrivateLeaderboardService(AocConfig config, LeaderboardEntryGenerator entryGenerator) {
         super(config);
         this.config = config;
-        this.mapper = mapper;
+        this.creator = entryGenerator;
     }
 
     public MessageEmbed retrieveLeaderboardEmbed() {
@@ -75,7 +74,6 @@ public class PrivateLeaderboardService extends LeaderboardService {
     }
     
     private String generateTopTenEntrysAsString(List<Entry> sortedEntrys) {
-        var creator = new LeaderboardEntryGenerator(mapper);
         return sortedEntrys.stream()
             .map(creator::getTopTenEntry)
             .flatMap(Optional::stream)
@@ -84,7 +82,6 @@ public class PrivateLeaderboardService extends LeaderboardService {
     }
     
     private String generateAllEntrysAsString(List<Entry> sortedEntrys) {
-        var creator = new LeaderboardEntryGenerator(mapper);
         return sortedEntrys.stream()
                 .map(creator::getRankedLeaderboardEntry)
                 .collect(Collectors.joining("\n"));
@@ -92,7 +89,6 @@ public class PrivateLeaderboardService extends LeaderboardService {
     
     private String generateDailyCompletionAsString(List<Entry> sortedEntrys) {
         int day = AocDate.getAocDay();
-        var creator = new LeaderboardEntryGenerator(mapper);
         return sortedEntrys.stream()
             .filter(e -> e.stagesCompleteForDay(day).orElse(0) > 0)
             .sorted((a, b) -> a.compareWithDailyScore(b, day))                

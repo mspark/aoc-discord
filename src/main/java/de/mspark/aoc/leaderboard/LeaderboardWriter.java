@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import de.mspark.aoc.AocConfig;
 import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
-import de.mspark.jdaw.JDAManager;
+import de.mspark.jdaw.startup.JDAManager;
 
 @Component
 @EnableScheduling
@@ -45,7 +45,7 @@ public class LeaderboardWriter {
         String dailyText = ":sparkles: Die Aufgaben für den **" + day + ". Tag** von Advent-Of-Code können nun gelöst werden! :sparkles:";
         var txtChannel = jda.getNextJDA().getTextChannelById(config.dailyChannelId());
         if (day > 1) {
-            txtChannel.sendMessage(lbService.retrieveLeaderboardEmbed()).submit();
+            txtChannel.sendMessageEmbeds(lbService.retrieveLeaderboardEmbed()).submit();
         }
         txtChannel.sendMessage(dailyText).submit();
     }

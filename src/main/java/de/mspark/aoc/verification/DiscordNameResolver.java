@@ -2,9 +2,10 @@ package de.mspark.aoc.verification;
 
 import java.util.Optional;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import de.mspark.jdaw.JDAManager;
+import de.mspark.jdaw.startup.JDAManager;
 
 @Component
 public class DiscordNameResolver {
@@ -12,7 +13,7 @@ public class DiscordNameResolver {
     private JDAManager jdas;
     private PersistentVerificationData verificationData;
     
-    public DiscordNameResolver(JDAManager jdas, PersistentVerificationData verificationData) {
+    public DiscordNameResolver(@Lazy JDAManager jdas, PersistentVerificationData verificationData) {
         this.jdas = jdas;
         this.verificationData = verificationData;
     }

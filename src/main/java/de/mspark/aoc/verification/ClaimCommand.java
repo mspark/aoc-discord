@@ -2,31 +2,24 @@ package de.mspark.aoc.verification;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import de.mspark.aoc.verification.exceptions.AlreadyVerifiedExcpetion;
-import de.mspark.jdaw.Command;
-import de.mspark.jdaw.CommandProperties;
-import de.mspark.jdaw.JDAManager;
-import de.mspark.jdaw.config.JDAWConfig;
-import de.mspark.jdaw.guilds.GuildConfigService;
+import de.mspark.jdaw.cmdapi.TextCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-@CommandProperties(
-    trigger = "claim",
-    description = "Claims your AOC account and connects it with discord", 
-    executableWihtoutArgs = true, 
-    privateChatAllowed = true)
-public class ClaimCommand extends Command {
+@Component
+public class ClaimCommand extends TextCommand{
     private VerificationTaskManager verifier;
     
-    public ClaimCommand(JDAWConfig conf, GuildConfigService gc, JDAManager jdas, VerificationTaskManager verifier) {
-        super(conf, gc, jdas);
+    public ClaimCommand(VerificationTaskManager verifier) {
         this.verifier = verifier;
     }
     
     @Override
-    public void doActionOnCmd(Message msg, List<String> cmdArguments) {
+    public void onTrigger(Message msg, List<String> cmdArguments) {
         try {
             verify(msg);            
         } catch (AlreadyVerifiedExcpetion e) {
@@ -51,10 +44,30 @@ public class ClaimCommand extends Command {
     }
     
     @Override
-    protected MessageEmbed fullHelpPage() {
+    public MessageEmbed commandHelpPage() {
         return new EmbedBuilder()
                 .setDescription("You can claim an AOC Account by proving that you're the owner of an Account. "
                         + "Afterwards it is connected with your Servermembership here and your Discord Name appears in the leaderboard instead of your AOC Name. ")
                 .build();
+    }
+
+    @Override
+    public String trigger() {
+        return "claim";
+    }
+
+    @Override
+    public String description() {
+        return "Claims your AOC account and connects it with discord";
+    }
+    
+    @Override
+    public boolean privateChatAllowed() {
+        return true;
+    }
+    
+    @Override
+    public boolean executableWihtoutArgs() {
+        return true;
     }
 }

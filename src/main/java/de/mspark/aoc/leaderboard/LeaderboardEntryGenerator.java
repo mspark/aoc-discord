@@ -2,10 +2,13 @@ package de.mspark.aoc.leaderboard;
 
 import java.util.Optional;
 
+import org.springframework.stereotype.Component;
+
 import de.mspark.aoc.AocDate;
 import de.mspark.aoc.parsing.Entry;
 import de.mspark.aoc.verification.DiscordNameResolver;
 
+@Component
 class LeaderboardEntryGenerator {
     static final String[] ranks = {":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
     static final String[] STAIRS = {":crown:", ":star2:", ":star:"};
@@ -14,7 +17,6 @@ class LeaderboardEntryGenerator {
     private int count = 0;
     
     public LeaderboardEntryGenerator(DiscordNameResolver mapper) {
-        super();
         this.mapper = mapper;
     }
 

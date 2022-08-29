@@ -20,7 +20,7 @@ Create configuration file inside the directory with the jar and fill them with v
 
 ```
 bot:
-  prefix: "!"
+  defaultPrefix: "!"
   apiTokens:
     - 
 aoc: 

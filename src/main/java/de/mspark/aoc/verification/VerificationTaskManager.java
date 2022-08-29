@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import de.mspark.aoc.AocConfig;
 import de.mspark.aoc.leaderboard.LeaderboardService;
 import de.mspark.aoc.verification.exceptions.AlreadyVerifiedExcpetion;
 import de.mspark.aoc.verification.exceptions.MaxRetriesReachedException;
-import de.mspark.jdaw.JDAManager;
+import de.mspark.jdaw.startup.JDAManager;
 
 @Component
 @ThreadSafe
@@ -25,7 +26,7 @@ public class VerificationTaskManager {
     private final PersistentVerificationData verificationData;
     private final ConcurrentLinkedQueue<VerificationTask> verifyTasks= new ConcurrentLinkedQueue<>();
     
-    public VerificationTaskManager(VerificationLeaderboardService lbs, JDAManager jda, AocConfig config, PersistentVerificationData verificationData) {
+    public VerificationTaskManager(VerificationLeaderboardService lbs, @Lazy JDAManager jda, AocConfig config, PersistentVerificationData verificationData) {
         this.lbService = lbs;
         this.jdas = jda;
         this.verificationData = verificationData;

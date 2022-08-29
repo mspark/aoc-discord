@@ -12,9 +12,9 @@
 	<name>Advent of Code Discord Bot</name>
 
 	<parent>
-		<groupId>de.mspark.jdaw</groupId>
-		<artifactId>jdaw-spring-boot</artifactId>
-		<version>3.0-SNAPSHOT</version>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.2</version>
 	</parent>
 
 	<properties>
@@ -34,6 +34,15 @@
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.mspark</groupId>
+			<artifactId>jdaw</artifactId>
+			<version>6.0-SNAPSHOT.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 	</dependencies>
 	<distributionManagement>
