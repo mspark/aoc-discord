@@ -43,8 +43,8 @@ class BeanConfig {
     }
     
     @Bean
-    JdawInstance instance(JdawInstanceBuilder builder, List<TextCommand> cmds) {
-        return builder.addCommand(cmds.toArray(TextCommand[]::new)).buildJdawInstance();
+    JdawInstance instance(JdawInstanceBuilder builder, List<TextCommand> cmds, HelpConfig helpConfig) {
+        return builder.addCommand(cmds.toArray(TextCommand[]::new)).enableHelpCommand(helpConfig).buildJdawInstance();
     }
     
     
