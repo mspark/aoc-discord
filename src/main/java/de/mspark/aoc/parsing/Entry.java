@@ -14,7 +14,7 @@ public class Entry implements Comparable<Entry> {
     public static record Completions(int day, int stagesComplete, String completionTime) {
     }
 
-    private String id;
+    private int id;
     private String name;
     private int local_score;
     private Completions completion_day_level;
@@ -48,7 +48,7 @@ public class Entry implements Comparable<Entry> {
     }
     
     public String id() {
-        return id;
+        return id + "";
     }
     
     public String getCompletionMessage() {

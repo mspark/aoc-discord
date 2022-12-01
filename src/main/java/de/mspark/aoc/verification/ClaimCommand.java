@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Component
-public class ClaimCommand extends TextCommand{
+public class ClaimCommand extends TextCommand {
     private VerificationTaskManager verifier;
     
     public ClaimCommand(VerificationTaskManager verifier) {
