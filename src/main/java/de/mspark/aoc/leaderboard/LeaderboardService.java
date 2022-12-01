@@ -38,7 +38,11 @@ public abstract class LeaderboardService {
     public abstract String getAocLeaderboardId();
 
     protected Optional<List<Entry>> callAndParseLeaderboard(String leaderboardId) {
-        return makeAocHttpCall("https://adventofcode.com/" + getDateTimeAocZone().getYear()+ "/leaderboard/private/view/" + leaderboardId + ".json")
+        return callAndParseLeaderboard(leaderboardId, getDateTimeAocZone().getYear());
+    }
+    
+    protected Optional<List<Entry>> callAndParseLeaderboard(String leaderboardId, int desiredYear) {
+        return makeAocHttpCall("https://adventofcode.com/" + desiredYear + "/leaderboard/private/view/" + leaderboardId + ".json")
                 .map(LeaderboardService::parseBodyJson);
     }
 

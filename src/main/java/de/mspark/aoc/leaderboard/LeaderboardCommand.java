@@ -33,15 +33,36 @@ public class LeaderboardCommand extends TextCommand {
     @Override
     public void onTrigger(Message msg, List<String> cmdArguments) {
         if (cmdArguments.size() > 0) {
-            switch (cmdArguments.get(0)) {
-                case "full" -> msg.getChannel().sendMessageEmbeds(lbService.retrieveFullLeaderboardEmbed()).submit();
-                case "day" -> actionSendDailyCompletions(msg);
-                default -> msg.getChannel().sendMessage("Invalid arguments").submit();
+            try {
+                menu(msg, cmdArguments);
+            } catch (NoLeaderboardEntriesException e) {
+                msg.getChannel().sendMessage("Currently the leaderboard is unavailable. Contact an administrator").submit();
             }
         } else {
              msg.getChannel()
                  .sendMessageEmbeds(lbService.retrieveLeaderboardEmbed()).submit()
                  .thenAccept(m -> cacheNewMessageDeleteOld(m));
+        }
+    }
+
+    private void menu(Message msg, List<String> cmdArguments) {
+        switch (cmdArguments.get(0)) {
+        case "full" -> msg.getChannel().sendMessageEmbeds(lbService.retrieveFullLeaderboardEmbed()).submit();
+        case "day" -> actionSendDailyCompletions(msg);
+        default -> actionSendYearlyLeaderboard(msg, cmdArguments.get(0));
+        }
+    }
+    
+    private void actionSendYearlyLeaderboard(Message msg, String argument) {
+        try {
+            int number = Integer.parseInt(argument);
+            if (number > 2019) {
+                msg.getChannel().sendMessageEmbeds(lbService.retrieveYearLeaderboardEmbed(number)).submit();
+            } else {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            msg.getChannel().sendMessage("Invalid arguments").submit();
         }
     }
 
