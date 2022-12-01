@@ -88,7 +88,7 @@ public class PrivateLeaderboardService extends LeaderboardService {
     }
     
     private String generateDailyCompletionAsString(Stream<Entry> entries) {
-        var creator = new LeaderboardEntryGenerator(null);
+        var creator = new LeaderboardEntryGenerator(mapper);
         int day = AocDate.getAocDay();
         return entries.filter(e -> e.stagesCompleteForDay(day).orElse(0) > 0)
             .sorted((a, b) -> a.compareWithDailyScore(b, day))                
