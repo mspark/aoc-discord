@@ -1,5 +1,7 @@
 package de.mspark.aoc.leaderboard;
 
+import static de.mspark.aoc.AocDate.getDateTimeAocZone;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +38,12 @@ public abstract class LeaderboardService {
     public abstract String getAocLeaderboardId();
 
     protected Optional<List<Entry>> callAndParseLeaderboard(String leaderboardId) {
-        return makeAocHttpCall("https://adventofcode.com/2021/leaderboard/private/view/" + leaderboardId + ".json")
+        return makeAocHttpCall("https://adventofcode.com/" + getDateTimeAocZone().getYear()+ "/leaderboard/private/view/" + leaderboardId + ".json")
                 .map(LeaderboardService::parseBodyJson);
     }
 
     protected void removeUserFromLeaderboard(String aocUserId, String leaderboardId) {
-        makeAocHttpCall("https://adventofcode.com/2021/leaderboard/private/part/%s/%s".formatted(leaderboardId, aocUserId));
+        makeAocHttpCall("https://adventofcode.com/" + getDateTimeAocZone().getYear() + "/leaderboard/private/part/%s/%s".formatted(leaderboardId, aocUserId));
     }
     
     protected static List<Entry> parseBodyJson(String body) {
