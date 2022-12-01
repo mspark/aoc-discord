@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,11 @@ public class LeaderboardWriter {
     public LeaderboardWriter(PrivateLeaderboardService lbService) {
         this.lbService = lbService;
         this.savedEntrys = lbService.retrieveLeaderboard().get().stream().collect(Collectors.toMap(e -> e.id(), Function.identity()));
+        try {
+            this.savedEntrys = lbService.retrieveLeaderboard().get().stream().collect(Collectors.toMap(e -> e.id(), Function.identity()));
+        } catch(JsonParseException e) {
+            throw new RuntimeException("Unexpected JSON answer from API (you may provided an illegal session?)", e);
+        }
     }
     
     @Scheduled(cron = "0 0 6 1-25 12 *")
