@@ -23,7 +23,7 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.release>17</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<main.class>de.mspark.aoc.bot.AocBot</main.class>
+		<main.class>de.mspark.aoc.AocBot</main.class>
 	</properties>
 
 	<dependencies>
