@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import de.mspark.aoc.AocConfig;
+import de.mspark.aoc.AocDate;
 import de.mspark.aoc.leaderboard.LeaderboardService;
 import de.mspark.aoc.verification.exceptions.AlreadyVerifiedExcpetion;
 import de.mspark.aoc.verification.exceptions.MaxRetriesReachedException;
@@ -73,7 +74,7 @@ public class VerificationTaskManager {
 
     private String regenerateInviteCode() {
        Pattern pattern = Pattern.compile("<code>(\\w+-\\w+)</code>", Pattern.CASE_INSENSITIVE);
-       return lbService.makeAocHttpCall("https://adventofcode.com/2021/leaderboard/private/reset")
+       return lbService.makeAocHttpCall("https://adventofcode.com/%s/leaderboard/private/reset".formatted(AocDate.getDateTimeAocZone().getYear()))
             .map(pattern::matcher)
             .filter(Matcher::find)
             .map(match -> match.group(1))
