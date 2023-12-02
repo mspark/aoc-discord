@@ -78,7 +78,8 @@ public class LeaderboardCommand extends TextCommand {
                 .setDescription(description() + "\n Room code: " + roomCode + "\n The leaderboard is sent daily. "
                         + "If you manually ask for it, the sent message will be automatically removed after a specific time to keep the channel history clean.")
                 .addField("full", "With this parameter you see the whole leaderboard and not just the ten best", false)
-                .addField("daily", "Shows the number of completed stages of all member which at least completed on stage on the current day", false)
+                .addField("daily", "Shows the number of completed stages of all member which at least completed on stage one the current day", false)
+                .addField("<year>", "Four digit year. Shows the full leaderboard of the given year.", false)
                 .build();
     }
     
