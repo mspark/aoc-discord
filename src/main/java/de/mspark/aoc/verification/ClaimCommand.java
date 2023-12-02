@@ -21,12 +21,14 @@ public class ClaimCommand extends TextCommand {
     @Override
     public void onTrigger(Message msg, List<String> cmdArguments) {
         try {
-            verify(msg);            
+            msg.reply("Starting with 2022, the claim functions is not available anymore. Advent of code disabled the old machanism used by this bot.").submit();
+            //verify(msg);            
         } catch (AlreadyVerifiedExcpetion e) {
             msg.reply("You already claimed your AOC account.").submit();
         }
     }
 
+    @SuppressWarnings("unused")
     private void verify(Message msg) {
         var personalInviteCode = this.verifier.registerVerifyAction(msg.getAuthor().getId());
         if (personalInviteCode.isPresent()) {
