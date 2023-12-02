@@ -46,7 +46,7 @@ public class VerificationTaskManager {
              * to only once at a time. 
              */
             verifyTasks.add(new VerificationTask(discordUserId, lbService));
-            kickAllUserFromLeaderboard(lbService.getAocLeaderboardId()); // just for safety
+            kickAllUserFromLeaderboard(); // just for safety
             return Optional.of(regenerateInviteCode());
         } else {
             return Optional.empty();
@@ -63,7 +63,7 @@ public class VerificationTaskManager {
                     jdas.getNextJDA().openPrivateChannelById(verifiedDiscordId).complete()
                         .sendMessage("Verified!").submit();
                     verifyTasks.remove(vtask);
-                    kickAllUserFromLeaderboard(verifiedDiscordId);
+                    kickAllUserFromLeaderboard();
                 }
             } catch (MaxRetriesReachedException e) {
                 System.out.println("Max timeout reached");
@@ -82,7 +82,7 @@ public class VerificationTaskManager {
         
     }
 
-    private void kickAllUserFromLeaderboard(String lbId) {
+    private void kickAllUserFromLeaderboard() {
         lbService.retrieveLeaderboard()
             .orElseGet(Collections::emptyList).stream()
             .forEach(e -> lbService.removeUserFromLeaderboard(e.id()));
